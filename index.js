@@ -3,6 +3,8 @@ var app = express(); //instanciation d'une application Express
 const cors = require('cors');  // Import CORS middleware
 // Pour s'assurer que l'on peut faire des appels AJAX au serveur
 app.use(cors());
+app.use(express.json());  
+app.use(express.urlencoded({ extended: true }));  
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
