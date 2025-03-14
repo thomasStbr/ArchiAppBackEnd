@@ -8,10 +8,28 @@ app.use(function(req, res, next) {
   next();
 });
 
-// Variable globale pour stocker les messages
-var allMsgs = ["Hello World", "foobar", "CentraleSupelec Forever"];
+class Message {
+    constructor(msg, pseudo, date = new Date()) {
+        this.msg = msg;
+        this.pseudo = pseudo;
+        this.date = date;
+    }
 
-// 1. Récupérer un message par son numéro
+    getFormattedDate() {
+        return this.date.toLocaleString();
+    }
+
+    getFullMessage() {
+        return `<strong>${this.pseudo}</strong> (${this.getFormattedDate()}): ${this.msg}`;
+    }
+}
+
+var allMsgs = [
+    new Message("Hello World", "Alice"),
+    new Message("foobar", "Bob"),
+    new Message("CentraleSupelec Forever", "Charlie")
+];
+
 app.get('/msg/get/:id', (req, res) => {
     const id = parseInt(req.params.id);
     if (isNaN(id) || id < 0 || id >= allMsgs.length) {
@@ -21,36 +39,31 @@ app.get('/msg/get/:id', (req, res) => {
     }
 });
 
-// 2. Récupérer TOUS les messages
 app.get('/msg/getAll', (req, res) => {
     res.json(allMsgs);
 });
 
-// 3. Récupérer le nombre de messages postés
 app.get('/msg/nber', (req, res) => {
     res.json(allMsgs.length);
 });
 
-// 4. Ajouter un message à la liste
-app.get('/msg/post/:msg', (req, res) => {
-    // On récupère et on décode le message (exemple : %20 pour les espaces)
-    const msg = unescape(req.params.msg);
-    allMsgs.push(msg);
-    // Retourne le numéro du message (index dans le tableau)
-    res.json(allMsgs.length - 1);
+app.post('/msg/post', (req, res) => {
+    const { msg, pseudo } = req.body;
+    if (!msg || !pseudo) {
+        return res.json({ code: 0, error: "Message and pseudo are required" });
+    }
+    
+    const newMessage = new Message(msg, pseudo);
+    allMsgs.push(newMessage);
+    
+    res.json({ code: 1, id: allMsgs.length - 1, message: newMessage });
 });
 
-app.get("/", function(req, res) {
-    res.send("Hello")
-  })
-  
-// 5. Effacer un message de la liste
-app.get('/msg/del/:id', (req, res) => {
+app.delete('/msg/del/:id', (req, res) => {
     const id = parseInt(req.params.id);
     if (isNaN(id) || id < 0 || id >= allMsgs.length) {
         res.json({ code: 0 });
     } else {
-        // On supprime le message à l'indice indiqué
         allMsgs.splice(id, 1);
         res.json({ code: 1 });
     }
