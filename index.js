@@ -50,7 +50,7 @@ app.get('/msg/nber', (req, res) => {
     res.json(allMsgs.length);
 });
 
-app.post('/msg/post', (req, res) => {
+app.get('/msg/post', (req, res) => {
     const { msg, pseudo } = req.body;
     if (!msg || !pseudo) {
         return res.json({ code: 0, error: "Message and pseudo are required" });
@@ -62,7 +62,7 @@ app.post('/msg/post', (req, res) => {
     res.json({ code: 1, id: allMsgs.length - 1, message: newMessage });
 });
 
-app.delete('/msg/del/:id', (req, res) => {
+app.get('/msg/del/:id', (req, res) => {
     const id = parseInt(req.params.id);
     if (isNaN(id) || id < 0 || id >= allMsgs.length) {
         res.json({ code: 0 });
