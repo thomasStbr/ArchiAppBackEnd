@@ -50,7 +50,7 @@ app.get('/msg/nber', (req, res) => {
     res.json(allMsgs.length);
 });
 
-app.get('/msg/post', (req, res) => {
+app.post('/msg/post', (req, res) => {
     const { msg, pseudo } = req.body;
     if (!msg || !pseudo) {
         return res.json({ code: 0, error: "Message and pseudo are required" });
